@@ -14,4 +14,9 @@ public class FileHandler extends Handler {
     public void write(LogRecord record) {
 
     }
+
+    @Override
+    public void flush() {
+
+    }
 }

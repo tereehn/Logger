@@ -4,7 +4,7 @@ public class Main {
     {
 
         FileHandler handler = new FileHandler("test");
-        Logger logger = new Logger("test");
+        Logger logger = new Logger();
         logger.addHandler(handler);
 
     }

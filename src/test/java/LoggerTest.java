@@ -11,7 +11,7 @@ class LoggerTest {
 
     @BeforeEach
     void initEach() {
-        logger = new Logger("test_name");
+        logger = new Logger();
     }
 
     @Nested
