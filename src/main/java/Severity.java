@@ -1,0 +1,3 @@
+public enum Severity {
+    FINEST,FINER,FINE,CONFIG,INFO,WARNING,SEVERE
+}
