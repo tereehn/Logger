@@ -1,3 +1,5 @@
+package logger;
+
 public class TimeStamp {
 
     private final Months month;

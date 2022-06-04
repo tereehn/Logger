@@ -1,3 +1,5 @@
+package logger;
+
 public class LogRecord {
     private final TimeStamp timeStamp;
     private final Severity severity;
@@ -11,7 +13,7 @@ public class LogRecord {
         this.message = message;
     }
 
-    public LogRecord(TimeStamp timeStamp,  int counter, String message) {
+    public LogRecord(TimeStamp timeStamp, int counter, String message) {
         this.timeStamp = timeStamp;
         this.severity = null;
         this.counter = counter;

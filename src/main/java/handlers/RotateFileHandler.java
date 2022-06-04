@@ -1,4 +1,6 @@
-public class RotateFileHandler extends FileHandler{
+package handlers;
+
+public class RotateFileHandler extends FileHandler {
 
     private int maxFileSize;
     private int maxFiles;
