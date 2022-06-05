@@ -1,27 +1,24 @@
 package handlers;
 
-import java.io.FileWriter; // Import the FileWriter class
-import java.io.File; // Import the File class
-import java.io.IOException;  // Import the IOException class to handle errors
+import java.io.*;
+
 import logger.LogRecord;
 
 public class FileHandler extends Handler {
     private final String fileName;
+    private FileWriter fw = null;
+    private BufferedWriter bw = null;
+    private PrintWriter out = null;
 
     public FileHandler(String fileName) { // create file
         this.fileName = fileName;
         try {
-            File obj = new File(fileName);
-            if (obj.createNewFile()) {
-                System.out.println("File created: " + obj.getName());
-            } else {
-                System.out.println("File already exists.");
-            }
-
-            System.out.println("Successfully wrote to the file.");
+            fw = new FileWriter(fileName, true);
+            bw = new BufferedWriter(fw);
+            out = new PrintWriter(bw);
+            //out.println("test");
+           // out.close();
         } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
         }
     }
 
@@ -32,7 +29,9 @@ public class FileHandler extends Handler {
 
     @Override
     public void write(LogRecord record) {
-
+        System.out.println();
+        out.println(record.toString());
+        out.close();
     }
 
     @Override
