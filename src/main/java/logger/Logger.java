@@ -3,6 +3,8 @@ package logger;
 import handlers.Handler;
 
 import javax.print.attribute.standard.Severity;
+import java.util.Arrays;
+import java.util.Locale;
 
 public class Logger {
     private Handler handler; // handles writing to file
@@ -36,15 +38,19 @@ public class Logger {
     }
 
     public LogRecord parseInput(String stringToSplit){
-        System.out.println(stringToSplit);
-        String[] parts = stringToSplit.split(" ", 4);
-        String[] time = stringToSplit.split("/");
-        System.out.println(time[0]);
-        System.out.println(Integer. parseInt(time[1]));
-        System.out.println(".......................");
-        for(int i =0; i < parts.length;i++){
-           System.out.println(parts[i]);
+
+        String trimmedString = stringToSplit.trim().replaceAll(" +", " ");
+        String[] parts = trimmedString.split(" ", 4);
+        int[] date = Arrays.stream( parts[0].split("/")).mapToInt(Integer::parseInt).toArray();
+        int[] time = Arrays.stream( parts[1].split(":")).mapToInt(Integer::parseInt).toArray();
+        int tmpMonth = date[1] -1;
+        TimeStamp timeStamp = new TimeStamp(date[0],Months.values()[tmpMonth],date[2],time[0],time[0],time[1],time[2]);
+
+        // check if there is more input, get log message
+        if ( parts[3].indexOf(' ') != -1){
+            String[] end = parts[3].split(" ", 2);
+            return new LogRecord(timeStamp, logger.Severity.valueOf(end[0].toUpperCase()),Integer. parseInt(parts[2]),end[1]);
         }
-        return null;
+        return new LogRecord(timeStamp, Integer. parseInt(parts[2]),parts[3]);
     }
 }
