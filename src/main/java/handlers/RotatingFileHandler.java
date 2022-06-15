@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import logger.LogRecord;
 
@@ -22,7 +23,7 @@ public class RotatingFileHandler extends Handler {
     public RotatingFileHandler(FileHandlerBuilder builder) { // create file
         this.fileName = builder.fileName;
         this.fileRoot = builder.fileRoot;
-        this.baseName = builder.fileRoot + builder.fileName;
+        this.baseName = builder.fileName;
         this.maxFileSize = builder.maxFileSize;
         this.maxFiles = builder.maxFiles;
         currentFiles = new int[]{0,0}; // num, current file size
@@ -35,7 +36,6 @@ public class RotatingFileHandler extends Handler {
             fw = new FileWriter(fileRoot+fileName, true);
             bw = new BufferedWriter(fw);
             out = new PrintWriter(bw);
-            // out.close();
         } catch (IOException e) {
         }
     }
@@ -49,16 +49,34 @@ public class RotatingFileHandler extends Handler {
         this.baseName = parts[0];
     }
 
-    public String getNewName(){
-        return (currentFiles[0] + 1) +".log";
+    public String getNewName(int num){
+        return (baseName+(num + 1)) +".log";
+    }
+
+    public void renameFiles() throws IOException{
+
+        File folder = new File(fileRoot);
+        File[] listOfFiles = folder.listFiles();
+        Arrays.sort(listOfFiles, (a, b) -> -a.getName().compareTo(b.getName()));
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                String tmpName = listOfFiles[i].getName();
+                String numberOnly= tmpName.replaceAll("[^0-9]", "");
+                int num = 0;
+                if (numberOnly!="")
+                    num = Integer.parseInt(numberOnly);
+
+                Path yourFile = Paths.get(fileRoot,tmpName);
+                Files.move(yourFile, yourFile.resolveSibling(getNewName(num)));
+
+            }
+        }
     }
 
     public void rotateFile() throws IOException {
-        String newName = getNewName();
         this.close();
-        Path yourFile = Paths.get("testdir",fileName);
-        System.out.println(yourFile);
-        Files.move(yourFile, yourFile.resolveSibling(newName));
+        renameFiles();
         openFile();
         currentFiles[0]++;
         currentFiles[1] = 0;
@@ -97,14 +115,10 @@ public class RotatingFileHandler extends Handler {
 
     @Override
     public void write(LogRecord record) throws IOException {
-       // openFile();
-        System.out.println(getCurrentFileSize());
         if (getCurrentFileSize() >= getMaxFileSize()){
             this.rotateFile();
         }
-        out.println(record);
         setCurrentFileSize((record.toString()+"\n").getBytes().length);
-        //this.close();
     }
 
     @Override
