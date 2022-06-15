@@ -1,5 +1,6 @@
 package logger;
 
+
 public class LogRecord {
     private final TimeStamp timeStamp;
     private final Severity severity;
@@ -20,19 +21,13 @@ public class LogRecord {
         this.message = message;
     }
 
-    public TimeStamp getTimeStamp() {
-        return timeStamp;
-    }
-
-    public Severity getSeverity() {
-        return severity;
-    }
-
-    public int getCounter() {
-        return counter;
-    }
-
-    public String getMessage() {
-        return message;
+    @Override
+    public String toString() {
+        return "LogRecord{" +
+                "timeStamp=" + timeStamp +
+                ", severity=" + severity +
+                ", counter=" + counter +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

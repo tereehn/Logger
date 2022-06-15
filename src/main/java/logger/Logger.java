@@ -3,6 +3,7 @@ package logger;
 import handlers.Handler;
 
 import javax.print.attribute.standard.Severity;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -22,7 +23,7 @@ public class Logger {
         return handler;
     }
 
-    public boolean addLog(String input){
+    public boolean addLog(String input) throws IOException {
 
         LogRecord logRecord = parseInput(input);
         handler.write(logRecord);

@@ -1,14 +1,17 @@
 package logger;
 
-public class TimeStamp {
 
+public class TimeStamp  {
+
+    private final int year;
     private final Months month;
     private final int day;
     private final int hour;
     private final int minute;
     private final int seconds;
 
-    public TimeStamp(Months month, int day, int hour, int minute, int seconds) {
+    public TimeStamp(int year, Months month, int i, int day, int hour, int minute, int seconds) {
+        this.year = year;
         this.month = month;
         this.day = day;
         this.hour = hour;
@@ -36,4 +39,19 @@ public class TimeStamp {
         return seconds;
     }
 
+    public int getYear() {
+        return year;
+    }
+
+    @Override
+    public String toString() {
+        return "TimeStamp{" +
+                "year=" + year +
+                ", month=" + month +
+                ", day=" + day +
+                ", hour=" + hour +
+                ", minute=" + minute +
+                ", seconds=" + seconds +
+                '}';
+    }
 }
