@@ -4,79 +4,86 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import logger.LogRecord;
 
 public class RotatingFileHandler extends Handler {
     protected final String fileName;
     private String baseName;
-    private String ending;
     protected FileWriter fw = null;
     protected BufferedWriter bw = null;
     protected PrintWriter out = null;
-    protected String fileRoot =  "testdir/";
+    protected String fileRoot;
     private int maxFileSize;
     private int maxFiles;
-    private int numOfFiles = 0;
-    private int currentFileSize = 0;
+    private int currentFiles[];
 
-    public RotatingFileHandler(String fileName) { // create file
-        this.fileName = fileRoot+fileName;
-        this.baseName = fileName;
-        config();
+
+    public RotatingFileHandler(FileHandlerBuilder builder) { // create file
+        this.fileName = builder.fileName;
+        this.fileRoot = builder.fileRoot;
+        this.baseName = builder.fileName;
+        this.maxFileSize = builder.maxFileSize;
+        this.maxFiles = builder.maxFiles;
+        currentFiles = new int[]{0,0}; // num, current file size
         this.getFormat();
-    }
-
-    public RotatingFileHandler(String fileName, int maxFileSize ) {
-        this.fileName = fileRoot+fileName;
-        this.baseName = fileName;
-        this.maxFileSize = maxFileSize;
-        config();
-        this.getFormat();
-    }
-
-    public RotatingFileHandler(String fileName, int maxFileSize, int maxFiles) {
-        this.fileName = fileRoot+fileName;
-        this.baseName = fileName;
-        this.maxFileSize = maxFileSize;
-        this.maxFiles = maxFiles;
-        config();
-        this.getFormat();
-    }
-
-    public void config(){
-        this.setFileRoot(this.fileRoot);
         this.openFile();
     }
 
     public void openFile(){
         try {
-            fw = new FileWriter(fileName, true);
+            fw = new FileWriter(fileRoot+fileName, true);
             bw = new BufferedWriter(fw);
             out = new PrintWriter(bw);
-            // out.close();
         } catch (IOException e) {
         }
+    }
+
+    public void removeFile(String fileName){
+
     }
 
     public void getFormat(){
         String[] parts = baseName.split("\\.");
         this.baseName = parts[0];
-        this.ending = parts[1];
     }
 
-    public String getNewName(){
-        return baseName + (numOfFiles + 1) +".log";
+    public String getNewName(int num){
+        return (baseName+(num + 1)) +".log";
     }
 
-    public void rotateFile() throws IOException {
-        String newName = getNewName();
+    public synchronized void renameFiles() throws IOException{
+
+        File folder = new File(fileRoot);
+        File[] listOfFiles = folder.listFiles();
+        Arrays.sort(listOfFiles, (a, b) -> -a.getName().compareTo(b.getName()));
+
+        if (currentFiles[0] >= getMaxFileSize()) { // remove the last file
+            removeFile(listOfFiles[0].getName());
+        }
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                String tmpName = listOfFiles[i].getName();
+                String numberOnly= tmpName.replaceAll("[^0-9]", "");
+                int num = 0;
+                if (numberOnly!="")
+                    num = Integer.parseInt(numberOnly);
+
+                Path yourFile = Paths.get(fileRoot,tmpName);
+                Files.move(yourFile, yourFile.resolveSibling(getNewName(num)));
+
+            }
+        }
+    }
+
+    public synchronized void rotateFile() throws IOException {
         this.close();
-        Path yourFile = Paths.get(fileName);
-        Files.move(yourFile, yourFile.resolveSibling(newName));
+        renameFiles();
         openFile();
-        numOfFiles++;
-        currentFileSize = 0;
+        currentFiles[0]++;
+        currentFiles[1] = 0;
     }
 
     public void setFileRoot(String fileRoot) {
@@ -97,12 +104,11 @@ public class RotatingFileHandler extends Handler {
     }
 
     public int getCurrentFileSize() {
-        return currentFileSize;
+        return currentFiles[1];
     }
 
     public void setCurrentFileSize(int length) {
-
-        this.currentFileSize+= length;
+        this.currentFiles[1]+= length;
     }
 
     @Override
@@ -111,19 +117,50 @@ public class RotatingFileHandler extends Handler {
     }
 
     @Override
-    public void write(LogRecord record) throws IOException {
-       // openFile();
-        System.out.println(getCurrentFileSize());
+    public synchronized void write(LogRecord record) throws IOException {
         if (getCurrentFileSize() >= getMaxFileSize()){
             this.rotateFile();
         }
+        // tuto vyzujime formattor a tam posleme tu sprostu spravu a ona sa nam vrati a mozme to printerovat zapisat do tej kokotint
         out.println(record);
         setCurrentFileSize((record.toString()+"\n").getBytes().length);
-        //this.close();
     }
 
     @Override
     public void flush() {
+
+    }
+
+    public static class FileHandlerBuilder {
+
+        private final String fileName;
+        private String fileRoot =  "testdir/";
+        private int maxFileSize;
+        private int maxFiles;
+
+        public FileHandlerBuilder(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public FileHandlerBuilder fileRoot(String fileRoot) {
+            this.fileRoot = fileRoot;
+            return this;
+        }
+
+        public FileHandlerBuilder maxFileSize(int maxFileSize) {
+            this.maxFileSize = maxFileSize;
+            return this;
+        }
+
+        public FileHandlerBuilder maxFiles(int maxFiles) {
+            this.maxFiles = maxFiles;
+            return this;
+        }
+
+        public RotatingFileHandler build() {
+            RotatingFileHandler rotatingFileHandler =  new RotatingFileHandler(this);
+            return rotatingFileHandler;
+        }
 
     }
 }
