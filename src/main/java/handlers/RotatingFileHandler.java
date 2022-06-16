@@ -40,7 +40,7 @@ public class RotatingFileHandler extends Handler {
         }
     }
 
-    public void removeFile(int num){
+    public void removeFile(String fileName){
 
     }
 
@@ -53,11 +53,15 @@ public class RotatingFileHandler extends Handler {
         return (baseName+(num + 1)) +".log";
     }
 
-    public void renameFiles() throws IOException{
+    public synchronized void renameFiles() throws IOException{
 
         File folder = new File(fileRoot);
         File[] listOfFiles = folder.listFiles();
         Arrays.sort(listOfFiles, (a, b) -> -a.getName().compareTo(b.getName()));
+
+        if (currentFiles[0] >= getMaxFileSize()) { // remove the last file
+            removeFile(listOfFiles[0].getName());
+        }
 
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
@@ -74,7 +78,7 @@ public class RotatingFileHandler extends Handler {
         }
     }
 
-    public void rotateFile() throws IOException {
+    public synchronized void rotateFile() throws IOException {
         this.close();
         renameFiles();
         openFile();
@@ -104,7 +108,6 @@ public class RotatingFileHandler extends Handler {
     }
 
     public void setCurrentFileSize(int length) {
-
         this.currentFiles[1]+= length;
     }
 
@@ -114,10 +117,12 @@ public class RotatingFileHandler extends Handler {
     }
 
     @Override
-    public void write(LogRecord record) throws IOException {
+    public synchronized void write(LogRecord record) throws IOException {
         if (getCurrentFileSize() >= getMaxFileSize()){
             this.rotateFile();
         }
+        // tuto vyzujime formattor a tam posleme tu sprostu spravu a ona sa nam vrati a mozme to printerovat zapisat do tej kokotint
+        out.println(record);
         setCurrentFileSize((record.toString()+"\n").getBytes().length);
     }
 
@@ -156,7 +161,6 @@ public class RotatingFileHandler extends Handler {
             RotatingFileHandler rotatingFileHandler =  new RotatingFileHandler(this);
             return rotatingFileHandler;
         }
-
 
     }
 }

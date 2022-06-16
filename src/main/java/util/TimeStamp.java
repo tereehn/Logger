@@ -1,5 +1,7 @@
-package logger;
+package util;
 
+
+import util.Months;
 
 public class TimeStamp  {
 
@@ -10,7 +12,7 @@ public class TimeStamp  {
     private final int minute;
     private final int seconds;
 
-    public TimeStamp(int year, Months month, int i, int day, int hour, int minute, int seconds) {
+    public TimeStamp(int year, Months month, int day, int hour, int minute, int seconds) {
         this.year = year;
         this.month = month;
         this.day = day;

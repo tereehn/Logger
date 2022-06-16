@@ -1,6 +1,9 @@
 package logger;
 
 
+import util.Severity;
+import util.TimeStamp;
+
 public class LogRecord {
     private final TimeStamp timeStamp;
     private final Severity severity;
