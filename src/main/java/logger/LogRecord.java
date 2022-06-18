@@ -23,6 +23,14 @@ public class LogRecord {
         this.message = message;
     }
 
+    public TimeStamp getTimeStamp() {
+        return timeStamp;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
     public ErrorLevel getSeverity() {
         return errorLevel;
     }

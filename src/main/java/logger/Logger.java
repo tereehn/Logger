@@ -7,13 +7,12 @@ import util.ErrorLevel;
 import util.TimeStamp;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class Logger {
     private Handler handler;
     private ErrorLevel level = ErrorLevel.TRACE;
-
+    private final Queue<LogRecord> queue = new LinkedList<>();
     /**
      * Default constructor.
      */
@@ -25,6 +24,18 @@ public class Logger {
         this.handler = newHandler;
     }
 
+    public boolean addLog(String input){
+        ArrayList<LogRecord> listOfLogs = parseInput(input);
+        if (listOfLogs.get(0).getSeverity() != null && !listOfLogs.get(0).getSeverity().isWorseThan( getLevel())) return false;
+        synchronized(this){
+            queue.addAll(listOfLogs);
+            this.notifyAll();
+        }
+        return  true;
+    }
+
+
+
     /**
      * Tries to log messages to a file.
      * @param input strings to process.
@@ -32,10 +43,9 @@ public class Logger {
      * @exception IOException On input error.
      * @see IOException
      */
-    public boolean addLog(String input)  {
-       ArrayList<LogRecord> listOfLogs = parseInput(input);
+    public boolean writeLog(String input)  {
 
-       if (listOfLogs.get(0).getSeverity() != null && !listOfLogs.get(0).getSeverity().isWorseThan( getLevel())) return false;
+        LogRecord logRecord = queue.poll();
 
       /* listOfLogs.forEach(x -> {
             try {

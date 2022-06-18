@@ -1,18 +1,15 @@
 package logger;
 
 import handlers.RotatingFileHandler;
-import logger.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
 import util.ErrorLevel;
 import util.TimeStamp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +26,7 @@ class LoggerTest {
 
     @Test
     @DisplayName("Set level of messages")
-    void settingLevel() {
+    void TestSettingLevel() {
         // if not set then level should be the lowest one possible
         assertEquals(ErrorLevel.TRACE, logger.getLevel());
         logger.setLevel(ErrorLevel.INFO);
@@ -92,9 +89,9 @@ class LoggerTest {
        String testInput3 = "2012/05/22 15:40:07 3 INFO string3";
 
         assertAll(
-                () -> assertEquals(true,logger.addLog(testInput1)),
-                () -> assertEquals(true,logger.addLog(testInput2)),
-                () -> assertEquals(true,logger.addLog(testInput3))
+                () -> assertEquals(true,logger.writeLog(testInput1)),
+                () -> assertEquals(true,logger.writeLog(testInput2)),
+                () -> assertEquals(true,logger.writeLog(testInput3))
         );
     }
 
@@ -107,9 +104,9 @@ class LoggerTest {
         String testInput3 = "2012/05/22 15:40:07 3 INFO string3";
 
         assertAll(
-                () -> assertEquals(false,logger.addLog(testInput1)),
-                () -> assertEquals(true,logger.addLog(testInput2)),
-                () -> assertEquals(false,logger.addLog(testInput3))
+                () -> assertEquals(false,logger.writeLog(testInput1)),
+                () -> assertEquals(true,logger.writeLog(testInput2)),
+                () -> assertEquals(false,logger.writeLog(testInput3))
         );
     }
 

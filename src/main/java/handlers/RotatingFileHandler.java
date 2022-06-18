@@ -9,6 +9,7 @@ import java.util.Arrays;
 import logger.LogRecord;
 
 public class RotatingFileHandler extends Handler {
+
     protected final String fileName;
     private String baseName;
     protected FileWriter fw = null;
@@ -19,7 +20,6 @@ public class RotatingFileHandler extends Handler {
     private final int maxFiles;
     private final int[] currentFiles;
 
-
     public RotatingFileHandler(FileHandlerBuilder builder) { // create file
         this.fileName = builder.fileName;
         this.fileRoot = builder.fileRoot;
@@ -29,8 +29,12 @@ public class RotatingFileHandler extends Handler {
         currentFiles = new int[]{0,0}; // num, current file size
         this.getFormat();
         this.openFile();
+        this.setFileRoot();
     }
 
+    /**
+     * Tries to open given file.
+     */
     public void openFile(){
         try {
             fw = new FileWriter(fileRoot+fileName, true);
@@ -42,6 +46,24 @@ public class RotatingFileHandler extends Handler {
 
     }
 
+    /**
+     * Sets file root given in constructor.
+     */
+    public void setFileRoot(){
+        File file = new File(fileRoot);
+
+        // true if the directory was created, false otherwise
+        if (file.mkdirs()) {
+            System.out.println("Directory is created!");
+        } else {
+            System.out.println("Failed to create directory!");
+        }
+    }
+
+    /**
+     * @param fileName file to be removed.
+     * Removes file in case max limit is reached.
+     */
     public void removeFile(String fileName){
         File myObj = new File(fileRoot+fileName);
         if (myObj.delete()) {
@@ -90,6 +112,10 @@ public class RotatingFileHandler extends Handler {
             }
         }
     }
+
+    /**
+     * Rotates files in case maximum file size was reached.
+     */
 
     public synchronized void rotateFile()  {
         this.close();
@@ -150,14 +176,6 @@ public class RotatingFileHandler extends Handler {
 
         public FileHandlerBuilder fileRoot(String fileRoot) {
             this.fileRoot = fileRoot;
-            File file = new File(fileRoot);
-
-            // true if the directory was created, false otherwise
-            if (file.mkdirs()) {
-                System.out.println("Directory is created!");
-            } else {
-                System.out.println("Failed to create directory!");
-            }
             return this;
         }
 

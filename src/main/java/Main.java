@@ -8,10 +8,13 @@
  * @since   2022-06-17
  */
 
+import formatters.SimpleFormatter;
 import handlers.RotatingFileHandler;
+import logger.LogRecord;
 import logger.Logger;
 import threads.LoggingThread;
 import util.ErrorLevel;
+import util.TimeStamp;
 
 import java.io.IOException;
 
@@ -20,7 +23,7 @@ public class Main {
     public static void main(String []args)   //static method
     {
 
-        RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
+      /*  RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
         Logger logger = new Logger();
         logger.setLevel(ErrorLevel.INFO);
         logger.addHandler(handler);
@@ -33,7 +36,8 @@ public class Main {
         logger.addLog("2012/05/22 15:40:07 5 INFO string string");
         logger.addLog("2012/05/22 15:40:07 5 INFO string string");
         logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
+        logger.addLog("2012/05/22 15:40:07 5 INFO string string");*/
+
 
         //LoggingThread x1 = new LoggingThread("cus",logger);
         //LoggingThread x2 = new LoggingThread("cus",logger);
@@ -46,7 +50,7 @@ public class Main {
         x1.stop();
         x2.stop();
         */
-        handler.close();
+        //handler.close();
     }
 
     private static void sleep(int i) {

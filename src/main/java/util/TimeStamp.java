@@ -10,7 +10,7 @@ public class TimeStamp  {
 
     private Date date;
     private final SimpleDateFormat parser;
-    private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     /**
      * Parses string into Date format.
@@ -24,9 +24,14 @@ public class TimeStamp  {
         }
     }
 
+   public TimeStamp changeFormat(String requestedFormat){
+        formatter = new SimpleDateFormat(requestedFormat);
+        return this;
+    }
+
     @Override
     public String toString() {
-        return "TimeStamp: " + formatter.format(date);
+        return  formatter.format(date);
     }
 
     @Override
