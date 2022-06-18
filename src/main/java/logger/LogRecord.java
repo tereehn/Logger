@@ -1,36 +1,51 @@
 package logger;
 
 
-import util.Severity;
+import util.ErrorLevel;
 import util.TimeStamp;
+
+import java.util.Objects;
 
 public class LogRecord {
     private final TimeStamp timeStamp;
-    private final Severity severity;
-    private final int counter;
+    private final ErrorLevel errorLevel;
     private final String message;
 
-    public LogRecord(TimeStamp timeStamp, Severity severity, int counter, String message) {
+    public LogRecord(TimeStamp timeStamp, ErrorLevel errorLevel, String message) {
         this.timeStamp = timeStamp;
-        this.severity = severity;
-        this.counter = counter;
+        this.errorLevel = errorLevel;
         this.message = message;
     }
 
-    public LogRecord(TimeStamp timeStamp, int counter, String message) {
+    public LogRecord(TimeStamp timeStamp,String message) {
         this.timeStamp = timeStamp;
-        this.severity = null;
-        this.counter = counter;
+        this.errorLevel = null;
         this.message = message;
+    }
+
+    public ErrorLevel getSeverity() {
+        return errorLevel;
     }
 
     @Override
     public String toString() {
         return "LogRecord{" +
                 "timeStamp=" + timeStamp +
-                ", severity=" + severity +
-                ", counter=" + counter +
+                ", severity=" + errorLevel +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LogRecord logRecord = (LogRecord) o;
+        return Objects.equals(timeStamp, logRecord.timeStamp) && errorLevel == logRecord.errorLevel && Objects.equals(message, logRecord.message);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timeStamp, errorLevel, message);
     }
 }

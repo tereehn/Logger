@@ -15,9 +15,9 @@ public class RotatingFileHandler extends Handler {
     protected BufferedWriter bw = null;
     protected PrintWriter out = null;
     protected String fileRoot;
-    private int maxFileSize;
-    private int maxFiles;
-    private int currentFiles[];
+    private final int maxFileSize;
+    private final int maxFiles;
+    private final int[] currentFiles;
 
 
     public RotatingFileHandler(FileHandlerBuilder builder) { // create file
@@ -37,11 +37,18 @@ public class RotatingFileHandler extends Handler {
             bw = new BufferedWriter(fw);
             out = new PrintWriter(bw);
         } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
     public void removeFile(String fileName){
-
+        File myObj = new File(fileRoot+fileName);
+        if (myObj.delete()) {
+            System.out.println("Deleted the file: " + myObj.getName());
+        } else {
+            System.out.println("Failed to delete the file.");
+        }
     }
 
     public void getFormat(){
@@ -49,54 +56,47 @@ public class RotatingFileHandler extends Handler {
         this.baseName = parts[0];
     }
 
-    public String getNewName(int num){
-        return (baseName+(num + 1)) +".log";
+    public String createName(int num){
+        return (baseName+(num )) +".log";
     }
 
-    public synchronized void renameFiles() throws IOException{
+    public synchronized void renameFiles() {
 
         File folder = new File(fileRoot);
         File[] listOfFiles = folder.listFiles();
         Arrays.sort(listOfFiles, (a, b) -> -a.getName().compareTo(b.getName()));
 
         if (currentFiles[0] >= getMaxFileSize()) { // remove the last file
-            removeFile(listOfFiles[0].getName());
+            removeFile(createName(getCurrentNumberOfFiles()));
         }
 
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile()) {
-                String tmpName = listOfFiles[i].getName();
-                String numberOnly= tmpName.replaceAll("[^0-9]", "");
+        for (File listOfFile : listOfFiles) {
+            if (listOfFile.isFile()) {
+                String tmpName = listOfFile.getName();
+                String numberOnly = tmpName.replaceAll("[^0-9]", "");
                 int num = 0;
-                if (numberOnly!="")
+                if (numberOnly != "")
                     num = Integer.parseInt(numberOnly);
 
-                Path yourFile = Paths.get(fileRoot,tmpName);
-                Files.move(yourFile, yourFile.resolveSibling(getNewName(num)));
+                System.out.println(tmpName);
+                System.out.println("CISLO: " + num);
+                Path yourFile = Paths.get(fileRoot, tmpName);
+                try {
+                    Files.move(yourFile, yourFile.resolveSibling(createName(num + 1)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
         }
     }
 
-    public synchronized void rotateFile() throws IOException {
+    public synchronized void rotateFile()  {
         this.close();
         renameFiles();
         openFile();
         currentFiles[0]++;
         currentFiles[1] = 0;
-    }
-
-    public void setFileRoot(String fileRoot) {
-
-        this.fileRoot = fileRoot;
-        File file = new File(fileRoot);
-
-        // true if the directory was created, false otherwise
-        if (file.mkdirs()) {
-            System.out.println("Directory is created!");
-        } else {
-            System.out.println("Failed to create directory!");
-        }
     }
 
     public int getMaxFileSize() {
@@ -107,36 +107,42 @@ public class RotatingFileHandler extends Handler {
         return currentFiles[1];
     }
 
-    public void setCurrentFileSize(int length) {
+    public int getCurrentNumberOfFiles() {
+        return currentFiles[0];
+    }
+
+    public synchronized void setCurrentFileSize(int length) {
         this.currentFiles[1]+= length;
     }
 
     @Override
-    public void close() {
-        out.close();
-    }
+    public void close() { out.close(); }
 
     @Override
-    public synchronized void write(LogRecord record) throws IOException {
+    public synchronized void write(LogRecord record) {
         if (getCurrentFileSize() >= getMaxFileSize()){
             this.rotateFile();
         }
-        // tuto vyzujime formattor a tam posleme tu sprostu spravu a ona sa nam vrati a mozme to printerovat zapisat do tej kokotint
+
         out.println(record);
+        System.out.println(currentFiles[0]);
         setCurrentFileSize((record.toString()+"\n").getBytes().length);
     }
 
     @Override
     public void flush() {
-
+        out.flush();
     }
 
+    /**
+     * Buils RotateFileHandler and sets files attributes.
+     */
     public static class FileHandlerBuilder {
 
         private final String fileName;
         private String fileRoot =  "testdir/";
         private int maxFileSize;
-        private int maxFiles;
+        private int maxFiles = 10;
 
         public FileHandlerBuilder(String fileName) {
             this.fileName = fileName;
@@ -144,6 +150,14 @@ public class RotatingFileHandler extends Handler {
 
         public FileHandlerBuilder fileRoot(String fileRoot) {
             this.fileRoot = fileRoot;
+            File file = new File(fileRoot);
+
+            // true if the directory was created, false otherwise
+            if (file.mkdirs()) {
+                System.out.println("Directory is created!");
+            } else {
+                System.out.println("Failed to create directory!");
+            }
             return this;
         }
 
@@ -157,9 +171,11 @@ public class RotatingFileHandler extends Handler {
             return this;
         }
 
+        /**
+         * Builds rotatingFileHandler.
+         */
         public RotatingFileHandler build() {
-            RotatingFileHandler rotatingFileHandler =  new RotatingFileHandler(this);
-            return rotatingFileHandler;
+            return new RotatingFileHandler(this);
         }
 
     }
