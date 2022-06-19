@@ -13,6 +13,7 @@ import handlers.RotatingFileHandler;
 import logger.LogRecord;
 import logger.Logger;
 import threads.LoggingThread;
+import threads.WritingThread;
 import util.ErrorLevel;
 import util.TimeStamp;
 
@@ -20,37 +21,32 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String []args)   //static method
+    public static void main(String []args) throws InterruptedException   //static method
     {
 
-      /*  RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
+        RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
         Logger logger = new Logger();
         logger.setLevel(ErrorLevel.INFO);
         logger.addHandler(handler);
-        logger.addLog("2012/05/22 15:40:07 3 INFO string string, string2, string3");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");
-        logger.addLog("2012/05/22 15:40:07 5 INFO string string");*/
+        SimpleFormatter formatter = new SimpleFormatter("${time} - ${levelname} - ${message}");
+        handler.addFormatter(formatter);
 
-
-        //LoggingThread x1 = new LoggingThread("cus",logger);
-        //LoggingThread x2 = new LoggingThread("cus",logger);
+        LoggingThread x1 = new LoggingThread("cus",logger,4);
+        LoggingThread x2 = new LoggingThread("cus",logger,3);
+        WritingThread y = new WritingThread("cau",logger);
         //LoggingThread x3 = new LoggingThread("cus",logger);
        // LoggingThread x4 = new LoggingThread("cus",logger);
 
-      /*  x1.start();
+        x1.start();
         x2.start();
-        sleep(10000);
-        x1.stop();
-        x2.stop();
-        */
-        //handler.close();
+        y.start();
+        x1.join();
+        x2.join();
+        y.join();
+     //   sleep(10000);
+
+
+        handler.close();
     }
 
     private static void sleep(int i) {

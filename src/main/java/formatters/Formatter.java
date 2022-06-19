@@ -4,7 +4,7 @@ import logger.LogRecord;
 
 import java.util.regex.Pattern;
 
-abstract class Formatter {
+public abstract class Formatter {
 
     protected String timeFormat;
     protected final String format;

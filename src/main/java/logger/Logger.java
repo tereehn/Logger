@@ -13,6 +13,8 @@ public class Logger {
     private Handler handler;
     private ErrorLevel level = ErrorLevel.TRACE;
     private final Queue<LogRecord> queue = new LinkedList<>();
+    private int workingThreads = 2;
+
     /**
      * Default constructor.
      */
@@ -25,38 +27,51 @@ public class Logger {
     }
 
     public boolean addLog(String input){
-        ArrayList<LogRecord> listOfLogs = parseInput(input);
-        if (listOfLogs.get(0).getSeverity() != null && !listOfLogs.get(0).getSeverity().isWorseThan( getLevel())) return false;
-        synchronized(this){
+        ArrayList<LogRecord> listOfLogs = new ArrayList<>();
+        if (input != null) {
+            listOfLogs = parseInput(input);
+            if (listOfLogs.get(0).getSeverity() != null && !listOfLogs.get(0).getSeverity().isWorseThan( getLevel())) return false;
+        }else {
+            listOfLogs.add(null);
+        }
+
+        synchronized(queue){
             queue.addAll(listOfLogs);
-            this.notifyAll();
+            queue.notify();
         }
         return  true;
     }
 
+    public LogRecord getElement() throws InterruptedException {
 
+        synchronized (queue){
 
-    /**
-     * Tries to log messages to a file.
-     * @param input strings to process.
-     * @return boolean return true if writing was successfully, false otherwise.
-     * @exception IOException On input error.
-     * @see IOException
-     */
-    public boolean writeLog(String input)  {
+            while(queue.isEmpty()){
+                queue.wait();
+            }
 
-        LogRecord logRecord = queue.poll();
+            return queue.poll();
+        }
 
-      /* listOfLogs.forEach(x -> {
+    }
+
+    public boolean writeLog(LogRecord record)  {
+
             try {
-                handler.write(x);
-                System.out.println(x);
+                handler.write(record);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });*/
+
 
         return true;
+    }
+    public  void decreaseWorkingThreads(){
+        workingThreads--;
+    }
+
+    public int getWorkingThreads(){
+        return  workingThreads;
     }
 
     /**
@@ -85,7 +100,6 @@ public class Logger {
         String trimmedString = stringToSplit.trim().replaceAll(" +", " ");
         String[] parts = trimmedString.split(" ", 4);
         TimeStamp timeStamp = new TimeStamp(parts[0] + " " + parts[1]);
-        int counter = Integer. parseInt(parts[2]);
         String lotStrings = "";
         ErrorLevel errorLevel = null;
 

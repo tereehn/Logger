@@ -26,7 +26,7 @@ public class RotatingFileHandler extends Handler {
         this.baseName = builder.fileName;
         this.maxFileSize = builder.maxFileSize;
         this.maxFiles = builder.maxFiles;
-        currentFiles = new int[]{0,0}; // num, current file size
+        currentFiles = new int[]{1,0}; // num, current file size
         this.getFormat();
         this.openFile();
         this.setFileRoot();
@@ -68,6 +68,7 @@ public class RotatingFileHandler extends Handler {
         File myObj = new File(fileRoot+fileName);
         if (myObj.delete()) {
             System.out.println("Deleted the file: " + myObj.getName());
+            currentFiles[0]--;
         } else {
             System.out.println("Failed to delete the file.");
         }
@@ -82,14 +83,14 @@ public class RotatingFileHandler extends Handler {
         return (baseName+(num )) +".log";
     }
 
-    public synchronized void renameFiles() {
+    public void renameFiles() {
 
         File folder = new File(fileRoot);
         File[] listOfFiles = folder.listFiles();
         Arrays.sort(listOfFiles, (a, b) -> -a.getName().compareTo(b.getName()));
 
-        if (currentFiles[0] >= getMaxFileSize()) { // remove the last file
-            removeFile(createName(getCurrentNumberOfFiles()));
+        if (currentFiles[0] >= getMaxFiles()) { // remove the last file
+            removeFile(createName(getCurrentNumberOfFiles()-1));
         }
 
         for (File listOfFile : listOfFiles) {
@@ -100,8 +101,6 @@ public class RotatingFileHandler extends Handler {
                 if (numberOnly != "")
                     num = Integer.parseInt(numberOnly);
 
-                System.out.println(tmpName);
-                System.out.println("CISLO: " + num);
                 Path yourFile = Paths.get(fileRoot, tmpName);
                 try {
                     Files.move(yourFile, yourFile.resolveSibling(createName(num + 1)));
@@ -117,12 +116,16 @@ public class RotatingFileHandler extends Handler {
      * Rotates files in case maximum file size was reached.
      */
 
-    public synchronized void rotateFile()  {
+    public void rotateFile()  {
         this.close();
         renameFiles();
         openFile();
         currentFiles[0]++;
         currentFiles[1] = 0;
+    }
+
+    public int getMaxFiles() {
+        return maxFiles;
     }
 
     public int getMaxFileSize() {
@@ -137,7 +140,7 @@ public class RotatingFileHandler extends Handler {
         return currentFiles[0];
     }
 
-    public synchronized void setCurrentFileSize(int length) {
+    public void setCurrentFileSize(int length) {
         this.currentFiles[1]+= length;
     }
 
@@ -145,14 +148,14 @@ public class RotatingFileHandler extends Handler {
     public void close() { out.close(); }
 
     @Override
-    public synchronized void write(LogRecord record) {
+    public void write(LogRecord record) {
         if (getCurrentFileSize() >= getMaxFileSize()){
             this.rotateFile();
         }
-
-        out.println(record);
+        String logToWrite = formatter.formatData(record);
+        out.println(logToWrite);
         System.out.println(currentFiles[0]);
-        setCurrentFileSize((record.toString()+"\n").getBytes().length);
+        setCurrentFileSize((logToWrite+"\n").getBytes().length);
     }
 
     @Override
