@@ -36,15 +36,6 @@ public class LogRecord {
     }
 
     @Override
-    public String toString() {
-        return "LogRecord{" +
-                "timeStamp=" + timeStamp +
-                ", severity=" + errorLevel +
-                ", message='" + message + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

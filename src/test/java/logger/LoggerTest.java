@@ -3,7 +3,6 @@ package logger;
 import handlers.RotatingFileHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import util.ErrorLevel;
@@ -18,15 +17,15 @@ class LoggerTest {
     private Logger logger;
 
     @BeforeEach
-    void initEach() {
+    void initEach() throws InterruptedException {
         logger = new Logger();
         RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
         logger.addHandler(handler);
     }
 
     @Test
-    @DisplayName("Set level of messages")
-    void TestSettingLevel() {
+    @DisplayName("Set error level of messages")
+    void testSettingLevel() {
         // if not set then level should be the lowest one possible
         assertEquals(ErrorLevel.TRACE, logger.getLevel());
         logger.setLevel(ErrorLevel.INFO);
@@ -84,37 +83,34 @@ class LoggerTest {
     @Test
     @DisplayName("Logging to file")
     void testAddLog() {
-       String testInput1 = "2012/05/22 15:40:07 3 INFO string string, string2, string3";
-       String testInput2 = "2012/05/22 15:40:07 3 string string, string2, string3";
-       String testInput3 = "2012/05/22 15:40:07 3 INFO string3";
+        LogRecord Test1 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.TRACE,"string string");
+        LogRecord Test2 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.INFO,"string string");
+        LogRecord Test3 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.DEBUG,"string2");
+        LogRecord Test4 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.FATAL,"string3");
 
-      /*  assertAll(
-                () -> assertEquals(true,logger.writeLog(testInput1)),
-                () -> assertEquals(true,logger.writeLog(testInput2)),
-                () -> assertEquals(true,logger.writeLog(testInput3))
-        );*/
+        assertAll(
+                () -> assertEquals(true,logger.writeLog(Test1)),
+                () -> assertEquals(true,logger.writeLog(Test2)),
+                () -> assertEquals(true,logger.writeLog(Test3)),
+                () -> assertEquals(true,logger.writeLog(Test4))
+        );
     }
 
     @Test
-    @DisplayName("Logging to file")
+    @DisplayName("Logging to file with given severity")
     void testAddLogLowSeverity() {
-        logger.setLevel(ErrorLevel.FATAL);
-        String testInput1 = "2012/05/22 15:40:07 3 INFO string string, string2, string3";
-        String testInput2 = "2012/05/22 15:40:07 3 string string, string2, string3";
-        String testInput3 = "2012/05/22 15:40:07 3 INFO string3";
+        logger.setLevel(ErrorLevel.INFO);
+        LogRecord Test1 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.TRACE,"string string");
+        LogRecord Test2 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.INFO,"string string");
+        LogRecord Test3 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.DEBUG,"string2");
+        LogRecord Test4 = new LogRecord(new TimeStamp("2012/05/22 15:40:07"),ErrorLevel.FATAL,"string3");
 
-        /*assertAll(
-                () -> assertEquals(false,logger.writeLog(testInput1)),
-                () -> assertEquals(true,logger.writeLog(testInput2)),
-                () -> assertEquals(false,logger.writeLog(testInput3))
-        );*/
+        assertAll(
+                () -> assertEquals(false,logger.writeLog(Test1)),
+                () -> assertEquals(true,logger.writeLog(Test2)),
+                () -> assertEquals(false,logger.writeLog(Test3)),
+                () -> assertEquals(false,logger.writeLog(Test4))
+        );
     }
-
-    @Nested
-    class AddTest {
-
-    }
-
-
 
 }

@@ -2,18 +2,37 @@ package formatters;
 
 import logger.LogRecord;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class SimpleFormatter extends Formatter {
+public class SimpleFormatter {
 
-    public SimpleFormatter(String format) {
-        super(format);
+    protected String timeFormat;
+    protected String format;
+    protected final String defaultFormat = "%{time} - %{levelname} - %{message}";
+    protected final String fieldStart = "\\%\\{";
+    protected final String fieldEnd = "\\}";
+
+    protected final String regex = fieldStart + "([^}]+)" + fieldEnd;
+    protected final Pattern pattern = Pattern.compile(regex);
+
+    public String getTimeFormat() {
+        return timeFormat;
     }
 
-    @Override
+    public void setTimeFormat(String timeFormat) {
+        this.timeFormat = timeFormat;
+    }
+
+    public SimpleFormatter(String format) {
+        this.format = format;
+    }
+    /**
+     * @param record log string to format.
+     * Formats data into desired form given on input.
+     * */
     public String formatData(LogRecord record) {
         Map<String, String> valuesMap = new HashMap<String, String>();
         valuesMap.put("time", record.getTimeStamp().toString());

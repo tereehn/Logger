@@ -27,9 +27,9 @@ public class RotatingFileHandler extends Handler {
         this.maxFileSize = builder.maxFileSize;
         this.maxFiles = builder.maxFiles;
         currentFiles = new int[]{1,0}; // num, current file size
+        this.setFileRoot();
         this.getFormat();
         this.openFile();
-        this.setFileRoot();
     }
 
     /**
@@ -79,10 +79,16 @@ public class RotatingFileHandler extends Handler {
         this.baseName = parts[0];
     }
 
+    /**
+     * Adds corresponding name to newly created file when rotation applied.
+     */
     public String createName(int num){
         return (baseName+(num )) +".log";
     }
 
+    /**
+     * Renames files in directory in case rotating is performed.
+     */
     public void renameFiles() {
 
         File folder = new File(fileRoot);
@@ -164,7 +170,7 @@ public class RotatingFileHandler extends Handler {
     }
 
     /**
-     * Buils RotateFileHandler and sets files attributes.
+     * Builds RotateFileHandler and sets files attributes.
      */
     public static class FileHandlerBuilder {
 

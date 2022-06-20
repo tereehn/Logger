@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ErrorLevelTest {
 
-
     @Test
     void isWorseThan() {
         ErrorLevel test = ErrorLevel.DEBUG;

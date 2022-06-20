@@ -1,10 +1,7 @@
-
-
 package logger;
 
 import handlers.Handler;
-import util.ErrorLevel;
-import util.TimeStamp;
+import util.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -26,6 +23,12 @@ public class Logger {
         this.handler = newHandler;
     }
 
+    /**
+     * Add log strings to queue, the method is synchronized.
+     * @param input strings to parsed.
+     * @return boolean true if input could be parsed..
+     */
+
     public boolean addLog(String input){
         ArrayList<LogRecord> listOfLogs = new ArrayList<>();
         if (input != null) {
@@ -42,6 +45,10 @@ public class Logger {
         return  true;
     }
 
+    /**
+     * @return LogRecord pops element out of queue.
+     * @exception throws InterruptedException
+     */
     public LogRecord getElement() throws InterruptedException {
 
         synchronized (queue){
@@ -55,6 +62,10 @@ public class Logger {
 
     }
 
+    /**
+     * @param record log string to write.
+     * @return boolean true if record was written on file.
+     */
     public boolean writeLog(LogRecord record)  {
 
             try {
@@ -66,12 +77,21 @@ public class Logger {
 
         return true;
     }
+
+    /**
+     * Decrease the number of active threads.
+     */
+
     public  void decreaseWorkingThreads(){
         workingThreads--;
     }
 
+    /**
+     * @return int number of active threads .
+     */
+
     public int getWorkingThreads(){
-        return  workingThreads;
+        return workingThreads;
     }
 
     /**
@@ -105,7 +125,6 @@ public class Logger {
 
         if ( parts[3].indexOf(' ') != -1){
             String[] end = parts[3].split(" ", 2);
-            //lotStrings = end [1];
             if (!ErrorLevel.contains(end[0])){
                lotStrings = parts[3];
             }else {
