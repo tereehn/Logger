@@ -16,6 +16,11 @@ maximum size of file and maximum number of files. If parameters are not provided
 ```java
 RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
 ```
+Eventually we must clear the handler.
+
+```java
+handler.close();
+```
 
 ## Setup formatter
 If desired, user can determine format in which log messages will be stored in a file. 
