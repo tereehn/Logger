@@ -151,7 +151,8 @@ public class RotatingFileHandler extends Handler {
     }
 
     @Override
-    public void close() { out.close(); }
+    public void close() { out.close();
+    }
 
     @Override
     public void write(LogRecord record) {
@@ -160,13 +161,14 @@ public class RotatingFileHandler extends Handler {
         }
         String logToWrite = formatter.formatData(record);
         out.println(logToWrite);
-        System.out.println(currentFiles[0]);
+        this.flush();
         setCurrentFileSize((logToWrite+"\n").getBytes().length);
     }
 
     @Override
     public void flush() {
         out.flush();
+
     }
 
     /**

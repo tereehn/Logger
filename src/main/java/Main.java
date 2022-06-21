@@ -23,7 +23,7 @@ public class Main {
 
         RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
         Logger logger = new Logger();
-        logger.setLevel(ErrorLevel.TRACE);
+        logger.setLevel(ErrorLevel.DEBUG);
         logger.addHandler(handler);
         SimpleFormatter formatter = new SimpleFormatter("%{time} - %{levelname} - %{message}");
         handler.addFormatter(formatter);
@@ -39,7 +39,8 @@ public class Main {
         x2.join();
         y.join();
         //   sleep(10000);
-
+        x1.printStatistics();
+        x2.printStatistics();
 
         handler.close();
     }
