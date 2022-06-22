@@ -1,1 +1,7 @@
-C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\LoggerTest.java
+C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\logger\LogRecordTest.java
+C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\logger\LoggerTest.java
+C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\formatters\SimpleFormatterTest.java
+C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\util\TimeStampTest.java
+C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\util\ErrorLevelTest.java
+C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\handlers\RotatingFileHandlerTest.java
+C:\Users\terez\OneDrive\Desktop\SCHOOL\Logger\src\test\java\threads\LoggingThreadTest.java
