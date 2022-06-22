@@ -14,7 +14,7 @@ public class LoggingThread extends Thread{
     protected final Logger logger;
 
     protected int counter = 0;
-    protected int successCounter = 0; // how many logs were successfully written
+    protected int successCounter = 0;
     public int processingCount;
 
     public LoggingThread(String tag, Logger logger, int processingCount) {
@@ -105,7 +105,7 @@ public class LoggingThread extends Thread{
         }
 
         public static String getRandomTime(){
-            Date dat = new Date(ThreadLocalRandom.current().nextInt() * 1000L);;
+            Date dat = new Date(ThreadLocalRandom.current().nextInt() * 1000L);
             java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             return format.format(dat);
         }

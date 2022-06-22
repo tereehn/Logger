@@ -108,7 +108,7 @@ public class RotatingFileHandler extends Handler {
                 String tmpName = listOfFile.getName();
                 String numberOnly = tmpName.replaceAll("[^0-9]", "");
                 int num = 0;
-                if (numberOnly != "")
+                if (!numberOnly.equals(""))
                     num = Integer.parseInt(numberOnly);
 
                 Path yourFile = Paths.get(fileRoot, tmpName);
@@ -182,7 +182,7 @@ public class RotatingFileHandler extends Handler {
 
         private final String fileName;
         private String fileRoot =  "testdir/";
-        private int maxFileSize;
+        private int maxFileSize = 200;
         private int maxFiles = 10;
 
         public FileHandlerBuilder(String fileName) {
