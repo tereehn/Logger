@@ -51,13 +51,17 @@ public class RotatingFileHandler extends Handler {
      */
     public void setFileRoot(){
         File file = new File(fileRoot);
-
+        File[] listOfFiles = file.listFiles();
         // true if the directory was created, false otherwise
         if (file.mkdirs()) {
             System.out.println("Directory is created!");
         } else {
             System.out.println("Failed to create directory!");
         }
+        // clean directory in case other files are there
+        for(File x: listOfFiles)
+            if (!x.isDirectory())
+                x.delete();
     }
 
     /**

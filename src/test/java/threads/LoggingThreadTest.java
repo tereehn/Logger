@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import util.ErrorLevel;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -90,5 +91,14 @@ class LoggingThreadTest {
     @AfterEach
     void closeHandler(){
         handler.close();
+    }
+
+    @AfterEach
+    void deleteFileIfExists(){
+        File file = new File("/testdir");
+        File[] listOfFiles = file.listFiles();
+        for(File x: listOfFiles)
+            if (!x.isDirectory())
+                x.delete();
     }
 }

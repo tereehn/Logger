@@ -18,7 +18,7 @@ import util.ErrorLevel;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException   //static method
+    public static void main(String[] args) throws InterruptedException
     {
 
         RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
@@ -28,8 +28,9 @@ public class Main {
         SimpleFormatter formatter = new SimpleFormatter("%{time} - %{levelname} - %{message}");
         handler.addFormatter(formatter);
 
-        LoggingThread x1 = new LoggingThread("1", logger, 4);
-        LoggingThread x2 = new LoggingThread("2", logger, 3);
+        // rotating of files will be applied, file size exceeds given limit
+        LoggingThread x1 = new LoggingThread("1", logger, 10);
+        LoggingThread x2 = new LoggingThread("2", logger, 15);
         WritingThread y = new WritingThread("3", logger);
 
         x1.start();
@@ -39,6 +40,7 @@ public class Main {
         x2.join();
         y.join();
         //   sleep(10000);
+        // Shows how many log strings were successfully written
         x1.printStatistics();
         x2.printStatistics();
 
