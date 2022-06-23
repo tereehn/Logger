@@ -31,18 +31,27 @@ public class Main {
         // rotating of files will be applied, file size exceeds given limit
         LoggingThread x1 = new LoggingThread("1", logger, 10);
         LoggingThread x2 = new LoggingThread("2", logger, 15);
-        WritingThread y = new WritingThread("3", logger);
+        // add more logging threads here
+       // LoggingThread x3 = new LoggingThread("3", logger, 7);
+       // LoggingThread x24= new LoggingThread("4", logger, 5);
+        WritingThread y = new WritingThread("write", logger);
 
         x1.start();
         x2.start();
-        y.start();
+        //x3.start();
+       // x4.start();
+       // y.start();
         x1.join();
         x2.join();
+        //x3.join();
+        //x4.join();
         y.join();
-        //   sleep(10000);
+        sleep(10000);
         // Shows how many log strings were successfully written
         x1.printStatistics();
         x2.printStatistics();
+        //x3.printStatistics();
+        //x4.printStatistics();
 
         handler.close();
     }

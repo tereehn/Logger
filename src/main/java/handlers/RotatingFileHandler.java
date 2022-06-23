@@ -59,9 +59,11 @@ public class RotatingFileHandler extends Handler {
             System.out.println("Failed to create directory!");
         }
         // clean directory in case other files are there
-        for(File x: listOfFiles)
-            if (!x.isDirectory())
-                x.delete();
+        if (listOfFiles!=null){
+            for(File x: listOfFiles)
+                if (!x.isDirectory())
+                    x.delete();
+        }
     }
 
     /**
