@@ -1,5 +1,5 @@
 # Logging framework :pencil2:
-Logging framework provides the objects, methods, and configuration necessary to parse input messages and send log strings to desired file.
+The Logging Framework offers a comprehensive set of objects, methods, and configurations to effortlessly parse input messages and seamlessly send log strings to a specified file.
 
 ## Setup logger
 
@@ -10,8 +10,7 @@ logger.setLevel(ErrorLevel.DEBUG);
 ```
 
 ## Setup handler
-Set up handler, responsible for writing logs to file. Handler can be utilized by adding optional parameters such as directory where log messages will be stored, 
-maximum size of file and maximum number of files. If parameters are not provided, default values will be assigned. When maximum file size is reached, then handler rotates file.
+Set up a handler that is responsible for writing logs to a file. The handler can be customized by adding optional parameters such as the directory where log messages will be stored, the maximum file size, and the maximum number of files. If no parameters are provided, default values will be assigned. When the maximum file size is reached, the handler will automatically rotate the file.
 
 ```java
 RotatingFileHandler handler = new RotatingFileHandler.FileHandlerBuilder("test.log").fileRoot("testdir/").maxFileSize(200).build();
@@ -31,8 +30,7 @@ handler.addFormatter(formatter);
 ```
 
 ## Multithreading
-For demonstration purposes of multithreaded logging. Let's create multiple LoggingThread objects, which will produce random messages and try writing them to file.
-Methods are synchronized to avoid race conditions. To avoid inconsistencies when multiple threads write to one file, write to file is provided by one thread (WritingThread).
+For the purpose of demonstrating multithreaded logging, let's create multiple LoggingThread objects. These objects will generate random messages and attempt to write them to a file. The methods are synchronized to prevent race conditions. To ensure consistency when multiple threads write to the same file, a single thread (WritingThread) is responsible for writing to the file.
 
 ```java
 LoggingThread x1 = new LoggingThread("1", logger, 4);
