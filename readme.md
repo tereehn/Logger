@@ -46,4 +46,4 @@ y.join();
 ```
 
 ## Tests
-Test can be found in test folder.
+Tests can be found in test folder.
